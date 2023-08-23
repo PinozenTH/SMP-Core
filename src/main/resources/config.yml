@@ -1,0 +1,12 @@
+# Databases
+host: 127.0.0.1
+port: 3306
+database: minecraft
+password: 1234
+username: admin
+
+# Discord Webhooks
+webhook: 
+
+# Breading Chances (default: 40%)
+mobBreedingSuccessPercentage: 40
