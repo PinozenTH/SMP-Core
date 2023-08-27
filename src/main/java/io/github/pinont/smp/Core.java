@@ -9,7 +9,9 @@ import io.github.pinont.smp.Utils.DiscordWebhook;
 import io.github.pinont.smp.Utils.GlobalEventUtils;
 import io.github.pinont.smp.Utils.Msg;
 import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -95,4 +97,7 @@ public final class Core extends JavaPlugin {
         }
     }
 
+    public @NotNull NamespacedKey key(String cosmetic) {
+        return cosmetic == null ? null : new NamespacedKey(this, cosmetic);
+    }
 }
