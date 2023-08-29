@@ -1,5 +1,6 @@
 package io.github.pinont.smp.Utils;
 
+import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -25,4 +26,22 @@ public class LoreUtils {
             }
         }
     }
+
+    public enum Rarity {
+        COMMON(ChatColor.WHITE),
+        RARE(ChatColor.BLUE),
+        EPIC(ChatColor.DARK_PURPLE),
+        LEGENDARY(ChatColor.GOLD),
+        MYSTIC(ChatColor.LIGHT_PURPLE);
+        private final ChatColor color;
+
+        Rarity(ChatColor color) {
+            this.color = color;
+        }
+
+        public ChatColor getColor() {
+            return color;
+        }
+    }
+
 }

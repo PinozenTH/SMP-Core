@@ -39,7 +39,7 @@ public class GlobalEventUtils {
 
                 if (contest) {
                     Bukkit.broadcastMessage(ChatColor.RED + "Contest has expired!");
-                    ContestBar.removeAll();
+                    if (ContestBar != null) ContestBar.removeAll();
                 } else {
                     Bukkit.broadcastMessage(ChatColor.RED + "Game has expired!");
                 }
@@ -67,8 +67,7 @@ public class GlobalEventUtils {
             game = false;
             answer = null;
         }
-
-        ContestBar.removeAll();
+        if (ContestBar != null) ContestBar.removeAll();
     }
 
     public static void start() {
@@ -79,7 +78,7 @@ public class GlobalEventUtils {
                 Random random = new Random();
                 rdm = random.nextInt(11);
 
-                if (!game) {
+                if (!game && isAnyoneIsOnline()) {
                     game = true;
                     if (rdm == 0) {
                         new ChatGame().sideGuess();
@@ -110,6 +109,10 @@ public class GlobalEventUtils {
             }
         }, 0L, 20L * 60L * 30L);
 
+    }
+
+    private static Boolean isAnyoneIsOnline() {
+        return Bukkit.getOnlinePlayers().size() > 0;
     }
 
     public static void setContestBar(int rdm) {

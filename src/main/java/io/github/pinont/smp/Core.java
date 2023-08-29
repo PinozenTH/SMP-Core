@@ -1,7 +1,8 @@
 package io.github.pinont.smp;
 
-import io.github.pinont.smp.Cosmetic.Sparking;
-import io.github.pinont.smp.Database.Connector;
+import io.github.pinont.smp.Ability.Fangs;
+import io.github.pinont.smp.Database.MySQL;
+import io.github.pinont.smp.Database.SQLite;
 import io.github.pinont.smp.Events.*;
 import io.github.pinont.smp.GlobalEvent.ChatGame;
 import io.github.pinont.smp.GlobalEvent.Contest;
@@ -10,6 +11,8 @@ import io.github.pinont.smp.Utils.GlobalEventUtils;
 import io.github.pinont.smp.Utils.Msg;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
+import org.bukkit.metadata.MetadataValue;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
@@ -37,18 +40,18 @@ public final class Core extends JavaPlugin {
             throw new RuntimeException(e);
         }
 
-        try {
-            registerRecipes();
-        } catch (Exception e) {
-            Msg.console("Error while registering recipes: " + e.getMessage());
-            Msg.console(e.getMessage());
-            try {
-                DiscordWebhook.sendEmbedMessage("Shutting Down Server", e.getMessage(), "990000");
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
-            Bukkit.getServer().shutdown();
-        }
+//        try {
+//            registerRecipes();
+//        } catch (Exception e) {
+//            Msg.console("Error while registering recipes: " + e.getMessage());
+//            Msg.console(e.getMessage());
+//            try {
+//                DiscordWebhook.sendEmbedMessage("Shutting Down Server", e.getMessage(), "990000");
+//            } catch (IOException ex) {
+//                throw new RuntimeException(ex);
+//            }
+//            Bukkit.getServer().shutdown();
+//        }
 
         getLogger().info("Plugin enabled");
     }
@@ -70,7 +73,7 @@ public final class Core extends JavaPlugin {
 
     private void registerEvents() {
         getServer().getPluginManager().registerEvents(new ChestLock(), this);
-        getServer().getPluginManager().registerEvents(new PlaceBlock(), this);
+        getServer().getPluginManager().registerEvents(new PlaceBlockTag(), this);
         getServer().getPluginManager().registerEvents(new MobBreedingChance(), this);
         getServer().getPluginManager().registerEvents(new MithrilDrops(), this);
         getServer().getPluginManager().registerEvents(new ChatGame(), this);
@@ -79,16 +82,27 @@ public final class Core extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new InventoryFull(), this);
         getServer().getPluginManager().registerEvents(new JoinEvents(), this);
         getServer().getPluginManager().registerEvents(new TreeFeller(), this);
-        getServer().getPluginManager().registerEvents(new Sparking(), this);
+        getServer().getPluginManager().registerEvents(new Fangs(), this);
+        getServer().getPluginManager().registerEvents(new TridentEnhancement(), this);
     }
 
-    private void registerRecipes() {
-        Sparking.Recipe();
-    }
+//    private void registerRecipes() {
+//        Fangs.Recipe();
+//    }
 
     private void initDatabase() throws IOException {
         try {
-            Connector.init();
+            if (getConfig().getString("database_type").equalsIgnoreCase("sqlite")) {
+                SQLite.init();
+            }
+            else if (getConfig().getString("database_type").equalsIgnoreCase("mysql")) {
+                MySQL.init();
+            }
+            else {
+                Msg.console("Invalid database type. Please check your config.yml");
+                DiscordWebhook.sendEmbedMessage("Shutting Down Server", "Invalid database type. Please check your config.yml", "990000");
+                Bukkit.getServer().shutdown();
+            }
         } catch (SQLException e) {
             Msg.console("Error while connecting to database: " + e.getMessage());
             Msg.console(e.getMessage());
@@ -97,7 +111,67 @@ public final class Core extends JavaPlugin {
         }
     }
 
-    public @NotNull NamespacedKey key(String cosmetic) {
-        return cosmetic == null ? null : new NamespacedKey(this, cosmetic);
+    public @NotNull NamespacedKey key(String string) {
+        return string == null ? null : new NamespacedKey(this, string);
+    }
+
+
+    public MetadataValue metadata(int i) {
+        return new MetadataValue() {
+            @Override
+            public Object value() {
+                return i;
+            }
+
+            @Override
+            public int asInt() {
+                return i;
+            }
+
+            @Override
+            public float asFloat() {
+                return i;
+            }
+
+            @Override
+            public double asDouble() {
+                return i;
+            }
+
+            @Override
+            public long asLong() {
+                return i;
+            }
+
+            @Override
+            public short asShort() {
+                return (short) i;
+            }
+
+            @Override
+            public byte asByte() {
+                return (byte) i;
+            }
+
+            @Override
+            public boolean asBoolean() {
+                return i != 0;
+            }
+
+            @Override
+            public String asString() {
+                return String.valueOf(i);
+            }
+
+            @Override
+            public Plugin getOwningPlugin() {
+                return plugin;
+            }
+
+            @Override
+            public void invalidate() {
+
+            }
+        };
     }
 }

@@ -14,6 +14,10 @@ import static io.github.pinont.smp.Utils.JsonUtils.toJson;
 public class DiscordWebhook {
 
     public static void sendMessage(String content) throws IOException {
+        if (plugin.getConfig().getString("enable_discord_webhook").equals("false")) {
+            Msg.console(content);
+            return;
+        }
         URL url = new URL(Objects.requireNonNull(plugin.getConfig().getString("webhook")));
         HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
         connection.setRequestMethod("POST");
@@ -41,6 +45,10 @@ public class DiscordWebhook {
     }
 
     public static void sendEmbedMessage(String title, String description, String color) throws IOException {
+        if (plugin.getConfig().getString("enable_discord_webhook").equals("false")) {
+            Msg.console(title + "\n" + description);
+            return;
+        }
         URL url = new URL(Objects.requireNonNull(plugin.getConfig().getString("webhook")));
         HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
         connection.setRequestMethod("POST");
@@ -77,6 +85,10 @@ public class DiscordWebhook {
 
     // image
     public static void sendEmbedMessage(String title, String description, String color, String image) throws IOException {
+        if (plugin.getConfig().getString("enable_discord_webhook").equals("false")) {
+            Msg.console(title + "\n" + description);
+            return;
+        }
         URL url = new URL(Objects.requireNonNull(plugin.getConfig().getString("webhook")));
         HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
         connection.setRequestMethod("POST");

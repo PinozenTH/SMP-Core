@@ -6,18 +6,22 @@ import java.sql.SQLException;
 
 import static io.github.pinont.smp.Core.plugin;
 
-public class Connector {
+public class MySQL {
     public static Connection connection;
 
     public static Connection init() throws SQLException {
-        String host = plugin.getConfig().getString("host");
-        String port = plugin.getConfig().getString("port");
-        String database = plugin.getConfig().getString("database");
-        String username = plugin.getConfig().getString("username");
-        String password = plugin.getConfig().getString("password");
+        String host = plugin.getConfig().getString("mysql.host");
+        String port = plugin.getConfig().getString("mysql.port");
+        String database = plugin.getConfig().getString("mysql.database");
+        String username = plugin.getConfig().getString("mysql.username");
+        String password = plugin.getConfig().getString("mysql.password");
         return connection = DriverManager.getConnection(
                 "jdbc:mysql://" + host + ":" + port + "/" + database + "?user=" + username + "&password=" +  password + "&useSSL=true&verifyServerCertificate=false"
         );
+    }
+
+    public static Connection getConnection() {
+        return connection;
     }
 
 }
