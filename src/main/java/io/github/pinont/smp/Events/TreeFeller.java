@@ -124,7 +124,7 @@ public class TreeFeller implements Listener {
     }
 
     private void AbilityExpire(Player player, Long x) {
-            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
             treeFeller.remove(player);
             Msg.player(player, ChatColor.YELLOW + "Tree Feller " + ChatColor.RED + "Deactivate");
         }, 20 * 60 * x);

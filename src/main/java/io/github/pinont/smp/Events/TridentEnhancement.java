@@ -66,40 +66,38 @@ public class TridentEnhancement implements Listener {
     private void onPlayerPickupArrow(PlayerPickupArrowEvent event)
     {
         // Check if this is a trident that should be in the offhand
-        if(
-                event.getArrow() instanceof Trident &&
-                event.getArrow().hasMetadata("offhand") &&
-                event.getPlayer().getInventory().getItemInOffHand().getType() == Material.AIR)
-        {
-            // The itemstack gets modified after the event so it must be cloned for future comparison
-            ItemStack item = event.getItem().getItemStack().clone();
+        if (event.getArrow() instanceof Trident) {
             Player p = event.getPlayer();
+            if (
+                    event.getArrow().hasMetadata("offhand") && p.getInventory().getItemInOffHand().getType() == Material.AIR) {
+                // The itemstack gets modified after the event so it must be cloned for future comparison
+                ItemStack item = event.getItem().getItemStack().clone();
 
-            // The item isn't in the inventory yet so schedule a checker
-            getServer().getScheduler().scheduleSyncDelayedTask(plugin, () ->
-            {
-                // Double-check to ensure offhand item is still empty
-                if(event.getPlayer().getInventory().getItemInOffHand().getType() != Material.AIR)
+                // The item isn't in the inventory yet so schedule a checker
+                getServer().getScheduler().scheduleSyncDelayedTask(plugin, () ->
                 {
-                    return;
-                }
-
-                // Start from end of inventory to get the most recently added trident in case duplicates exist
-                ItemStack[] contents = p.getInventory().getContents();
-                for(int i = contents.length - 1; i >= 0; i--)
-                {
-                    ItemStack current = contents[i];
-                    if(current != null && current.equals(item))
-                    {
-                        // If we find the trident and the offhand is clear, put it in the offhand
-                        p.getInventory().setItemInOffHand(current.clone());
-                        current.setAmount(current.getAmount() - 1);
-                        break;
+                    // Double-check to ensure offhand item is still empty
+                    if (event.getPlayer().getInventory().getItemInOffHand().getType() != Material.AIR) {
+                        return;
                     }
-                }
-                p.updateInventory();
-            });
+
+                    // Start from end of inventory to get the most recently added trident in case duplicates exist
+                    ItemStack[] contents = p.getInventory().getContents();
+                    for (int i = contents.length - 1; i >= 0; i--) {
+                        ItemStack current = contents[i];
+                        if (current != null && current.equals(item)) {
+                            // If we find the trident and the offhand is clear, put it in the offhand
+                            p.getInventory().setItemInOffHand(current.clone());
+                            current.setAmount(current.getAmount() - 1);
+                            break;
+                        }
+                    }
+                    p.updateInventory();
+                });
+            }
+            p.setCooldown(Material.TRIDENT, 50);
         }
+
     }
 
 }

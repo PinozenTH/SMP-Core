@@ -9,6 +9,9 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.inventory.HopperInventorySearchEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.metadata.FixedMetadataValue;
+
+import static io.github.pinont.smp.Core.plugin;
 
 public class ChestLock implements Listener {
 
@@ -52,29 +55,39 @@ public class ChestLock implements Listener {
 
         assert block != null;
         if (block.hasMetadata("placed")) {
-            if (block.getType().equals(Material.TRAPPED_CHEST)) {
-                if (!block.getMetadata("placedByPlayer").get(0).asString().equals(player.getUniqueId().toString())) {
-                    player.sendMessage("You are not allowed to open this chest");
-                    player.getInventory().close();
-                    event.setCancelled(true);
+            if (!block.hasMetadata("unlocked") && !block.getMetadata("placedByPlayer").get(0).asString().equals(player.getUniqueId().toString())) {
+                if (block.getType().equals(Material.TRAPPED_CHEST)) {
+                    if (!block.getMetadata("placedByPlayer").get(0).asString().equals(player.getUniqueId().toString())) {
+                        player.sendMessage("You are not allowed to open this chest");
+                        player.getInventory().close();
+                        event.setCancelled(true);
+                    }
+                } else if (block.getType().equals(Material.HOPPER)) {
+                    if (!block.getMetadata("placedByPlayer").get(0).asString().equals(player.getUniqueId().toString())) {
+                        player.sendMessage("You are not allowed to open this hopper");
+                        player.getInventory().close();
+                        event.setCancelled(true);
+                    }
+                } else if (block.getType().equals(Material.HOPPER_MINECART)) {
+                    if (!block.getMetadata("placedByPlayer").get(0).asString().equals(player.getUniqueId().toString())) {
+                        player.sendMessage("You are not allowed to open this hopper");
+                        player.getInventory().close();
+                        event.setCancelled(true);
+                    }
+                } else if (block.getType().equals(Material.SHULKER_BOX)) {
+                    if (!block.getMetadata("placedByPlayer").get(0).asString().equals(player.getUniqueId().toString())) {
+                        player.sendMessage("You are not allowed to open this shulker box");
+                        player.getInventory().close();
+                        event.setCancelled(true);
+                    }
                 }
-            } else if (block.getType().equals(Material.HOPPER)) {
-                if (!block.getMetadata("placedByPlayer").get(0).asString().equals(player.getUniqueId().toString())) {
-                    player.sendMessage("You are not allowed to open this hopper");
-                    player.getInventory().close();
-                    event.setCancelled(true);
-                }
-            } else if (block.getType().equals(Material.HOPPER_MINECART)) {
-                if (!block.getMetadata("placedByPlayer").get(0).asString().equals(player.getUniqueId().toString())) {
-                    player.sendMessage("You are not allowed to open this hopper");
-                    player.getInventory().close();
-                    event.setCancelled(true);
-                }
-            } else if (block.getType().equals(Material.SHULKER_BOX)) {
-                if (!block.getMetadata("placedByPlayer").get(0).asString().equals(player.getUniqueId().toString())) {
-                    player.sendMessage("You are not allowed to open this shulker box");
-                    player.getInventory().close();
-                    event.setCancelled(true);
+            } else if (player.getInventory().getItemInMainHand().getType().equals(Material.TRIPWIRE_HOOK) && player.isSneaking() && block.getMetadata("placedByPlayer").get(0).asString().equals(player.getUniqueId().toString())) {
+                if (!block.hasMetadata("unlocked")) {
+                    block.setMetadata("unlocked", new FixedMetadataValue(plugin, true));
+                    player.sendMessage("You have unlocked this chest");
+                } else if (block.hasMetadata("unlocked")) {
+                    block.removeMetadata("unlocked", plugin);
+                    player.sendMessage("You have locked this chest");
                 }
             }
         }
