@@ -1,5 +1,6 @@
 package io.github.pinont.smp;
 
+import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import io.github.pinont.smp.Ability.Fangs;
 import io.github.pinont.smp.Database.MySQL;
 import io.github.pinont.smp.Database.SQLite;
@@ -10,15 +11,19 @@ import io.github.pinont.smp.Utils.DiscordWebhook;
 import io.github.pinont.smp.Utils.GlobalEventUtils;
 import io.github.pinont.smp.Utils.Msg;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.NamespacedKey;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
+import org.yaml.snakeyaml.Yaml;
 
-import java.io.IOException;
+import java.io.*;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Map;
 
 public final class Core extends JavaPlugin {
 
@@ -109,6 +114,37 @@ public final class Core extends JavaPlugin {
             DiscordWebhook.sendEmbedMessage("Shutting Down Server", e.getMessage(), "990000");
             Bukkit.getServer().shutdown();
         }
+    }
+
+    public static Plugin worldedit = null;
+
+    private void initWorldeditPlugin() {
+        if (Bukkit.getPluginManager().getPlugin("WorldEdit") != null) {
+            Msg.console("WorldEdit plugin found");
+            worldedit = new WorldEditPlugin();
+        }
+        else {
+            Msg.console(ChatColor.YELLOW + "WorldEdit plugin not found\n" +
+                    "Please install WorldEdit plugin to use full feature of this plugin\n" +
+                    "https://dev.bukkit.org/projects/worldedit");
+        }
+    }
+
+    private void worldEditImplementFeature() throws FileNotFoundException {
+        // Command
+
+        // Events
+
+    }
+
+    private void loadAreaFile() throws IOException {
+        File areaFile = new File(plugin.getDataFolder(), "selectedArea.yml");
+        if (!areaFile.exists()) {
+            areaFile.createNewFile();
+        }
+
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(areaFile);
+        config.save(areaFile);
     }
 
     public @NotNull NamespacedKey key(String string) {
